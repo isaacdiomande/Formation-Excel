@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Formation Excel - Niveau Débutant</title>
+<style>
+  :root {
+    --green: #1D6F42;
+    --green-dark: #14532d;
+    --green-light: #e8f5e9;
+    --gold: #C9A227;
+    --bg: #f4f6f5;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --danger: #c0392b;
+    --danger-bg: #fdecea;
+    --success: #1D6F42;
+    --success-bg: #e8f5e9;
+    --border: #e5e7eb;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(180deg, #eef3ef 0%, var(--bg) 260px);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  .app { max-width: 900px; margin: 0 auto; padding: 24px 18px 60px; }
+  .hidden { display: none !important; }
+
+  header.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .logo {
+    width: 46px; height: 46px; border-radius: 10px;
+    background: var(--green);
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 20px; flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(29,111,66,0.25);
+  }
+  header.top h1 { font-size: 20px; margin: 0; line-height: 1.25; }
+  header.top p { margin: 2px 0 0; color: var(--muted); font-size: 13.5px; }
+
+  .user-box {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; color: var(--muted);
+  }
+  .user-box .who { font-weight: 600; color: var(--text); }
+  .link-btn {
+    background: none; border: none; color: var(--green-dark);
+    font-weight: 600; cursor: pointer; font-size: 13px; padding: 0;
+    text-decoration: underline;
+  }
+
+  /* ---- Login screen ---- */
+  .login-wrap {
+    display: flex; justify-content: center; align-items: flex-start;
+    padding-top: 20px;
+  }
+  .login-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 30px 28px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+  }
+  .login-card h2 { margin: 0 0 4px; font-size: 19px; }
+  .login-card .sub { color: var(--muted); font-size: 13.5px; margin: 0 0 22px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12.8px; font-weight: 600; margin-bottom: 5px; color: var(--text); }
+  .field input {
+    width: 100%; padding: 10px 12px; border-radius: 9px;
+    border: 1.5px solid var(--border); font-size: 14px;
+    font-family: inherit;
+  }
+  .field input:focus { outline: none; border-color: var(--green); }
+  .field .err { color: var(--danger); font-size: 12px; margin-top: 4px; display: none; }
+  .btn-block { width: 100%; }
+  .login-foot {
+    margin-top: 18px; text-align: center; font-size: 12.5px; color: var(--muted);
+  }
+  .admin-panel-toggle {
+    margin-top: 24px; padding-top: 18px; border-top: 1px dashed var(--border);
+    text-align: center;
+  }
+  .admin-inline { display: flex; gap: 8px; margin-top: 10px; }
+  .admin-inline input { flex: 1; }
+
+  /* ---- Menu screen ---- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  .session-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .session-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+    border-color: var(--green);
+  }
+  .session-card .num {
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    width: 30px; height: 30px;
+    background: var(--green-light);
+    color: var(--green-dark);
+    font-weight: 700;
+    border-radius: 8px;
+    font-size: 13.5px;
+    margin-bottom: 10px;
+  }
+  .session-card h3 { margin: 0 0 6px; font-size: 15.5px; }
+  .session-card .theme { color: var(--muted); font-size: 13px; line-height: 1.4; margin: 0 0 12px; min-height: 36px;}
+  .session-card .footer-row {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12.5px;
+  }
+  .badge {
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 11.5px;
+    background: #f1f5f2;
+    color: var(--green-dark);
+  }
+  .badge.done { background: var(--success-bg); color: var(--success); }
+
+  /* ---- Quiz screen ---- */
+  .quiz-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px; gap: 10px; flex-wrap: wrap;
+  }
+  .back-btn {
+    background: none; border: 1px solid var(--border);
+    padding: 8px 14px; border-radius: 999px; cursor: pointer;
+    font-size: 13.5px; color: var(--text); display:flex; align-items:center; gap:6px;
+  }
+  .back-btn:hover { background: #f2f2f2; }
+  .quiz-title-block h2 { margin: 0; font-size: 18px; }
+  .quiz-title-block p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+
+  .progress-bar-track {
+    background: var(--border);
+    border-radius: 999px;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 22px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), #2f9e63);
+    border-radius: 999px;
+    transition: width .35s ease;
+  }
+
+  .q-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12.5px; color: var(--muted); margin-bottom: 8px;
+  }
+
+  .question-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 24px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+  }
+  .question-card h3 {
+    margin: 0 0 20px;
+    font-size: 17px;
+    line-height: 1.45;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    display: flex; align-items: flex-start; gap: 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 14px;
+    cursor: pointer;
+    font-size: 14.5px;
+    line-height: 1.4;
+    transition: border-color .12s ease, background .12s ease;
+    background: #fff;
+  }
+  .option:hover:not(.disabled) { border-color: var(--green); background: var(--green-light); }
+  .option .letter {
+    flex-shrink: 0;
+    width: 26px; height: 26px;
+    border-radius: 7px;
+    background: #f1f2f4;
+    color: var(--text);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 12.5px;
+  }
+  .option.selected { border-color: var(--green); background: var(--green-light); }
+  .option.correct { border-color: var(--success); background: var(--success-bg); }
+  .option.correct .letter { background: var(--success); color: white; }
+  .option.wrong { border-color: var(--danger); background: var(--danger-bg); }
+  .option.wrong .letter { background: var(--danger); color: white; }
+  .option.disabled { cursor: default; }
+  .option.dim { opacity: 0.55; }
+
+  .feedback {
+    margin-top: 18px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 13.8px;
+    line-height: 1.5;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok { background: var(--success-bg); color: #14532d; border: 1px solid #bfe3c9; }
+  .feedback.ko { background: var(--danger-bg); color: #7f1d1d; border: 1px solid #f3c6c1; }
+  .feedback strong { display: block; margin-bottom: 4px; }
+
+  .nav-row {
+    display: flex; justify-content: flex-end; margin-top: 22px;
+  }
+  .btn {
+    background: var(--green);
+    color: white; border: none;
+    padding: 11px 22px;
+    border-radius: 999px;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: background .15s ease, opacity .15s ease;
+  }
+  .btn:hover { background: var(--green-dark); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn.secondary {
+    background: white; color: var(--green-dark); border: 1.5px solid var(--green);
+  }
+  .btn.secondary:hover { background: var(--green-light); }
+
+  /* ---- Results screen ---- */
+  .result-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 34px 26px;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+  }
+  .result-ring {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    margin: 0 auto 18px;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    font-weight: 800;
+    color: white;
+  }
+  .result-ring .num { font-size: 30px; line-height: 1; }
+  .result-ring .den { font-size: 12.5px; opacity: 0.85; font-weight: 600;}
+  .result-card h2 { margin: 0 0 6px; font-size: 20px; }
+  .result-card .msg { color: var(--muted); font-size: 14px; margin-bottom: 26px; }
+  .result-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+  .recap {
+    text-align: left;
+    margin-top: 26px;
+    border-top: 1px solid var(--border);
+    padding-top: 18px;
+  }
+  .recap-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 13.3px;
+  }
+  .recap-item:last-child { border-bottom: none; }
+  .recap-icon {
+    width: 20px; height: 20px; border-radius: 50%;
+    flex-shrink: 0; margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11.5px; font-weight: 700; color: white;
+  }
+  .recap-icon.ok { background: var(--success); }
+  .recap-icon.ko { background: var(--danger); }
+  .recap-text .q { font-weight: 600; margin-bottom: 2px; }
+  .recap-text .a { color: var(--muted); }
+
+  footer.overall {
+    margin-top: 32px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12.5px;
+  }
+
+  /* ---- Admin screen ---- */
+  .admin-note {
+    background: #fff8e6; border: 1px solid #f1dfa3; color: #7a5b00;
+    padding: 12px 14px; border-radius: 10px; font-size: 12.8px; margin-bottom: 20px; line-height: 1.5;
+  }
+  .admin-toolbar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
+  }
+  .admin-stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
+    gap: 12px; margin-bottom: 22px;
+  }
+  .stat-box {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .stat-box .val { font-size: 22px; font-weight: 800; color: var(--green-dark); }
+  .stat-box .lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  table.admin-table {
+    width: 100%; border-collapse: collapse; background: var(--card);
+    border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+    font-size: 13px;
+  }
+  table.admin-table th, table.admin-table td {
+    padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border);
+  }
+  table.admin-table th {
+    background: var(--green-light); color: var(--green-dark); font-size: 12px;
+    text-transform: uppercase; letter-spacing: .03em;
+  }
+  table.admin-table tr:last-child td { border-bottom: none; }
+  table.admin-table tr:hover td { background: #fafbfa; }
+  .pct-chip {
+    padding: 3px 8px; border-radius: 999px; font-weight: 700; font-size: 11.5px;
+  }
+  .pct-chip.high { background: var(--success-bg); color: var(--success); }
+  .pct-chip.mid { background: #fff6df; color: #8a6d00; }
+  .pct-chip.low { background: var(--danger-bg); color: var(--danger); }
+  .empty-admin { text-align: center; color: var(--muted); padding: 40px 0; font-size: 13.5px; }
+
+  @media (max-width: 480px) {
+    .question-card { padding: 18px; }
+    .result-card { padding: 26px 18px; }
+    table.admin-table { font-size: 12px; }
+    .admin-table th, .admin-table td { padding: 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div class="brand">
+      <div class="logo">X</div>
+      <div>
+        <h1>Quiz - Formation Excel Débutant</h1>
+        <p>8 séances · 8 questions par quiz · Corrigés et explications inclus</p>
+      </div>
+    </div>
+    <div class="user-box hidden" id="user-box">
+      <span>Connecté : <span class="who" id="user-name"></span></span>
+      <button class="link-btn" onclick="logout()">Se déconnecter</button>
+    </div>
+  </header>
+
+  <!-- LOGIN SCREEN -->
+  <section id="login-screen">
+    <div class="login-wrap">
+      <div class="login-card">
+        <h2>Connexion participant</h2>
+        <p class="sub">Renseignez vos informations pour démarrer ou reprendre vos quiz. Votre progression est enregistrée sur cet ordinateur.</p>
+        <form id="login-form" onsubmit="return handleLogin(event)">
+          <div class="field">
+            <label for="in-prenom">Prénom</label>
+            <input type="text" id="in-prenom" required>
+          </div>
+          <div class="field">
+            <label for="in-nom">Nom</label>
+            <input type="text" id="in-nom" required>
+          </div>
+          <div class="field">
+            <label for="in-email">Adresse email</label>
+            <input type="email" id="in-email" required>
+            <div class="err" id="login-err">Merci de renseigner une adresse email valide.</div>
+          </div>
+          <button type="submit" class="btn btn-block">Continuer</button>
+        </form>
+        <p class="login-foot">Première connexion ou retour : indiquez simplement le même email pour retrouver votre progression.</p>
+
+        <div class="admin-panel-toggle">
+          <button class="link-btn" onclick="toggleAdminLogin()" id="admin-toggle-btn">Accès administrateur</button>
+          <div class="admin-inline hidden" id="admin-inline-box">
+            <input type="password" id="admin-password" placeholder="Mot de passe administrateur">
+            <button class="btn secondary" onclick="handleAdminLogin()">Entrer</button>
+          </div>
+          <div class="err" id="admin-err" style="margin-top:8px;">Mot de passe incorrect.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU SCREEN -->
+  <section id="menu-screen" class="hidden">
+    <div class="grid" id="session-grid"></div>
+    <footer class="overall" id="overall-footer"></footer>
+  </section>
+
+  <!-- QUIZ SCREEN -->
+  <section id="quiz-screen" class="hidden">
+    <div class="quiz-header">
+      <button class="back-btn" onclick="goToMenu()">&larr; Retour aux séances</button>
+    </div>
+    <div class="quiz-title-block" style="margin-bottom:14px;">
+      <h2 id="quiz-title"></h2>
+      <p id="quiz-theme"></p>
+    </div>
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="progress-fill"></div></div>
+    <div class="q-meta">
+      <span id="q-counter"></span>
+      <span id="q-score-live"></span>
+    </div>
+    <div class="question-card">
+      <h3 id="q-text"></h3>
+      <div class="options" id="q-options"></div>
+      <div class="feedback" id="q-feedback"></div>
+      <div class="nav-row">
+        <button class="btn" id="next-btn" disabled onclick="nextQuestion()">Suivant</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULT SCREEN -->
+  <section id="result-screen" class="hidden">
+    <div class="result-card">
+      <div class="result-ring" id="result-ring">
+        <div class="num" id="result-num"></div>
+        <div class="den" id="result-den"></div>
+      </div>
+      <h2 id="result-title"></h2>
+      <p class="msg" id="result-msg"></p>
+      <div class="result-actions">
+        <button class="btn secondary" onclick="retryQuiz()">Recommencer ce quiz</button>
+        <button class="btn" onclick="goToMenu()">Retour aux séances</button>
+      </div>
+      <div class="recap" id="recap"></div>
+    </div>
+  </section>
+
+  <!-- ADMIN SCREEN -->
+  <section id="admin-screen" class="hidden">
+    <div class="admin-toolbar">
+      <h2 style="margin:0; font-size:19px;">Espace administrateur</h2>
+      <div style="display:flex; gap:10px;">
+        <button class="btn secondary" onclick="exportCsv()">Exporter en CSV</button>
+        <button class="back-btn" onclick="logout()">Quitter l'espace admin</button>
+      </div>
+    </div>
+    <div class="admin-note">
+      Si l'envoi vers Google Sheet est activé (URL renseignée dans le code), la vue centralisée et à jour se trouve directement dans votre Google Sheet — chaque score y est ajouté automatiquement à la fin d'un quiz. Le tableau ci-dessous reste utile comme <strong>sauvegarde locale</strong> : il n'affiche que les participants ayant utilisé cet ordinateur/navigateur précis, et sert de filet de sécurité (export CSV) en cas de coupure internet au moment de l'envoi.
+    </div>
+    <div class="admin-stats" id="admin-stats"></div>
+    <div id="admin-table-wrap"></div>
+  </section>
+
+</div>
+
+<script>
+/* ============ CONFIGURATION ============ */
+// Mot de passe administrateur : changez cette valeur si besoin.
+const ADMIN_PASSWORD = "Formation2026";
+
+// URL du script Google Apps Script (se termine par /exec). Laissez vide ("") pour désactiver
+// l'envoi vers Google Sheet et garder uniquement la sauvegarde locale par participant.
+const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwO4En3gI0RHpD_LgxOoh5RT6JowO-1t_z8aS9QxhGruFFp8Zd_GGP05PmhmzaOAYD_Fw/exec";
+
+const SESSIONS = [{"id": 1, "key": "S1_Quiz", "title": "Séance 1 - Quiz : Interface et bases", "theme": "Interface, saisie, mise en forme de base", "questions": [{"question": "Comment appelle-t-on l'intersection d'une ligne et d'une colonne dans Excel ?", "options": [{"letter": "A", "text": "Une case"}, {"letter": "B", "text": "Une cellule"}, {"letter": "C", "text": "Un onglet"}, {"letter": "D", "text": "Une feuille"}], "correct": "B", "explanation": "L'intersection ligne/colonne s'appelle une cellule, identifiée par une référence comme B3."}, {"question": "Quel type de données Excel affiche-t-il par défaut aligné à droite ?", "options": [{"letter": "A", "text": "Le texte"}, {"letter": "B", "text": "Les nombres"}, {"letter": "C", "text": "Les deux pareil"}, {"letter": "D", "text": "Aucun"}], "correct": "B", "explanation": "Les nombres et dates s'alignent à droite par défaut, le texte à gauche - c'est un repère visuel utile pour détecter une erreur de saisie."}, {"question": "Que se passe-t-il si vous tapez 01/08/2026 dans une cellule vide sans mise en forme préalable ?", "options": [{"letter": "A", "text": "Excel le garde en texte"}, {"letter": "B", "text": "Excel le reconnaît automatiquement comme une date"}, {"letter": "C", "text": "Excel affiche une erreur"}, {"letter": "D", "text": "Excel le transforme en nombre décimal"}], "correct": "B", "explanation": "Excel reconnaît automatiquement les formats de date courants et les aligne à droite."}, {"question": "Quel raccourci clavier permet de copier une cellule sélectionnée ?", "options": [{"letter": "A", "text": "Ctrl + V"}, {"letter": "B", "text": "Ctrl + X"}, {"letter": "C", "text": "Ctrl + C"}, {"letter": "D", "text": "Ctrl + Z"}], "correct": "C", "explanation": "Ctrl+C copie, Ctrl+V colle, Ctrl+X coupe, Ctrl+Z annule."}, {"question": "Comment renommer un onglet (feuille) dans un classeur Excel ?", "options": [{"letter": "A", "text": "Double-clic sur le nom de l'onglet"}, {"letter": "B", "text": "Clic droit sur une cellule"}, {"letter": "C", "text": "Impossible de renommer un onglet"}, {"letter": "D", "text": "Ctrl + R"}], "correct": "A", "explanation": "Un double-clic sur le nom de l'onglet en bas permet de le renommer directement."}, {"question": "Quelle est la différence entre un classeur et une feuille ?", "options": [{"letter": "A", "text": "Aucune, c'est pareil"}, {"letter": "B", "text": "Le classeur est le fichier entier, la feuille est un onglet à l'intérieur"}, {"letter": "C", "text": "La feuille contient plusieurs classeurs"}, {"letter": "D", "text": "Un classeur ne peut avoir qu'une seule feuille"}], "correct": "B", "explanation": "Un classeur (.xlsx) est le fichier ; il peut contenir plusieurs feuilles (onglets)."}, {"question": "Pour appliquer un format monétaire à une colonne de montants, on utilise :", "options": [{"letter": "A", "text": "Le menu Insertion"}, {"letter": "B", "text": "Le groupe 'Nombre' dans l'onglet Accueil"}, {"letter": "C", "text": "La barre d'état en bas"}, {"letter": "D", "text": "Il n'existe pas de format monétaire"}], "correct": "B", "explanation": "Le groupe Nombre de l'onglet Accueil permet de choisir un format monétaire, pourcentage, date, etc."}, {"question": "Quelle touche permet de passer à la cellule suivante à droite après une saisie ?", "options": [{"letter": "A", "text": "Entrée"}, {"letter": "B", "text": "Tabulation"}, {"letter": "C", "text": "Espace"}, {"letter": "D", "text": "Flèche du haut"}], "correct": "B", "explanation": "La touche Tabulation déplace la sélection vers la cellule de droite ; Entrée descend d'une ligne."}]}, {"id": 2, "key": "S2_Quiz", "title": "Séance 2 - Quiz : Références relatives et absolues", "theme": "Références relatives/absolues, recopie", "questions": [{"question": "Que signifie le symbole $ devant une référence de cellule, comme $B$5 ?", "options": [{"letter": "A", "text": "Que la cellule contient un montant en dollars"}, {"letter": "B", "text": "Que la référence est figée (absolue) et ne change pas lors d'une recopie"}, {"letter": "C", "text": "Que la cellule est protégée contre la modification"}, {"letter": "D", "text": "Rien, c'est juste esthétique"}], "correct": "B", "explanation": "Le symbole $ fige la ligne et/ou la colonne : la référence reste identique quand on recopie la formule."}, {"question": "Dans =A1*$B$1, si on recopie la formule vers la droite puis vers le bas, que devient A1 ?", "options": [{"letter": "A", "text": "Elle reste toujours A1"}, {"letter": "B", "text": "Elle change en fonction de la nouvelle position (référence relative)"}, {"letter": "C", "text": "Elle devient $A$1"}, {"letter": "D", "text": "Elle disparaît"}], "correct": "B", "explanation": "A1, sans $, est une référence relative : elle s'ajuste automatiquement selon la position de la cellule recopiée."}, {"question": "Quelle touche permet de basculer rapidement entre référence relative, absolue et mixte pendant la saisie d'une formule ?", "options": [{"letter": "A", "text": "F2"}, {"letter": "B", "text": "F4"}, {"letter": "C", "text": "F9"}, {"letter": "D", "text": "F11"}], "correct": "B", "explanation": "La touche F4 fait défiler les 4 combinaisons : A1, $A$1, A$1, $A1."}, {"question": "Une référence mixte comme $B5 fige :", "options": [{"letter": "A", "text": "La ligne uniquement"}, {"letter": "B", "text": "La colonne uniquement"}, {"letter": "C", "text": "Ligne et colonne"}, {"letter": "D", "text": "Rien du tout"}], "correct": "B", "explanation": "$B5 fige la colonne B (elle ne changera pas si on recopie vers la droite) mais la ligne 5 reste relative."}, {"question": "Pour recopier une formule vers le bas rapidement, on peut :", "options": [{"letter": "A", "text": "Retaper la formule à chaque ligne"}, {"letter": "B", "text": "Faire glisser la poignée de recopie (petit carré en bas à droite de la cellule)"}, {"letter": "C", "text": "Ce n'est pas possible dans Excel"}, {"letter": "D", "text": "Utiliser uniquement le copier-coller classique"}], "correct": "B", "explanation": "La poignée de recopie (coin inférieur droit de la cellule) permet d'étendre une formule sur plusieurs lignes ou colonnes en un geste."}, {"question": "Dans l'exercice du convertisseur, pourquoi le taux de change doit-il être en référence absolue ?", "options": [{"letter": "A", "text": "Parce que c'est obligatoire pour tous les taux"}, {"letter": "B", "text": "Parce qu'il est unique et ne doit pas bouger quand on recopie la formule sur plusieurs lignes"}, {"letter": "C", "text": "Parce que c'est un nombre décimal"}, {"letter": "D", "text": "Cela n'a pas d'importance dans cet exercice"}], "correct": "B", "explanation": "Le taux (B5) est une valeur de référence unique pour tous les produits : elle doit rester fixe (=$B$5) alors que le prix change à chaque ligne."}, {"question": "Que se passe-t-il si on oublie de figer une référence qui devrait l'être, lors d'une recopie vers le bas ?", "options": [{"letter": "A", "text": "Rien, Excel corrige automatiquement"}, {"letter": "B", "text": "La formule pointera vers une cellule vide ou incorrecte plus bas, faussant le résultat"}, {"letter": "C", "text": "Excel affiche un message d'erreur bloquant"}, {"letter": "D", "text": "Le format se perd"}], "correct": "B", "explanation": "C'est l'erreur la plus fréquente en Excel : la référence non figée se décale et pointe vers une cellule vide, donnant un résultat 0 ou faux."}, {"question": "Le raccourci Ctrl + ; permet d'insérer rapidement :", "options": [{"letter": "A", "text": "La formule SOMME"}, {"letter": "B", "text": "La date du jour"}, {"letter": "C", "text": "Une référence absolue"}, {"letter": "D", "text": "Un commentaire"}], "correct": "B", "explanation": "Ctrl + ; insère instantanément la date du jour dans la cellule active."}]}, {"id": 3, "key": "S3_Quiz", "title": "Séance 3 - Quiz : Fonctions de base", "theme": "Fonctions de base (SOMME, MOYENNE, MIN, MAX, NB)", "questions": [{"question": "Quelle fonction permet d'additionner une plage de cellules ?", "options": [{"letter": "A", "text": "=ADDITION()"}, {"letter": "B", "text": "=SOMME()"}, {"letter": "C", "text": "=TOTAL()"}, {"letter": "D", "text": "=CUMUL()"}], "correct": "B", "explanation": "La fonction SOMME(plage) additionne toutes les valeurs numériques de la plage sélectionnée."}, {"question": "Que fait la fonction =MOYENNE(A1:A10) si certaines cellules sont vides ?", "options": [{"letter": "A", "text": "Elle considère les cellules vides comme 0"}, {"letter": "B", "text": "Elle ignore les cellules vides dans le calcul"}, {"letter": "C", "text": "Elle renvoie une erreur"}, {"letter": "D", "text": "Elle bloque le calcul"}], "correct": "B", "explanation": "MOYENNE ignore les cellules vides et ne divise que par le nombre de cellules réellement remplies."}, {"question": "Quelle est la différence entre NB et NBVAL ?", "options": [{"letter": "A", "text": "Aucune différence"}, {"letter": "B", "text": "NB compte les cellules numériques, NBVAL compte toutes les cellules non vides (texte inclus)"}, {"letter": "C", "text": "NB compte le texte, NBVAL les nombres"}, {"letter": "D", "text": "NBVAL n'existe pas dans Excel"}], "correct": "B", "explanation": "NB ne compte que les valeurs numériques ; NBVAL compte toute cellule non vide, quel que soit le type de contenu."}, {"question": "La fonction MIN() sur une plage contenant des cellules vides :", "options": [{"letter": "A", "text": "Renvoie 0"}, {"letter": "B", "text": "Ignore les cellules vides et cherche le minimum parmi les valeurs saisies"}, {"letter": "C", "text": "Renvoie une erreur"}, {"letter": "D", "text": "Ne fonctionne pas"}], "correct": "B", "explanation": "MIN et MAX ignorent les cellules vides, contrairement à ce qu'on pourrait croire."}, {"question": "Pour calculer rapidement une somme sans taper de formule, on peut :", "options": [{"letter": "A", "text": "Sélectionner la plage et lire le résultat dans la barre d'état en bas à droite"}, {"letter": "B", "text": "C'est impossible sans formule"}, {"letter": "C", "text": "Utiliser uniquement le raccourci Ctrl+S"}, {"letter": "D", "text": "Passer par Power Query"}], "correct": "A", "explanation": "La barre d'état (bas de l'écran) affiche automatiquement Somme, Moyenne et Nombre dès qu'une plage de cellules est sélectionnée."}, {"question": "Quel raccourci insère automatiquement une fonction SOMME sur la plage détectée au-dessus ?", "options": [{"letter": "A", "text": "Alt + ="}, {"letter": "B", "text": "Ctrl + ="}, {"letter": "C", "text": "Shift + S"}, {"letter": "D", "text": "F5"}], "correct": "A", "explanation": "Alt + = (Somme automatique) détecte et propose la plage de cellules numériques adjacente."}, {"question": "Si une note est marquée comme texte ('Absent') au lieu d'être vide, que se passe-t-il avec MOYENNE ?", "options": [{"letter": "A", "text": "Excel la convertit automatiquement en 0"}, {"letter": "B", "text": "Elle est ignorée comme une cellule vide"}, {"letter": "C", "text": "Cela provoque une erreur #VALEUR!"}, {"letter": "D", "text": "Cela n'a aucun impact"}], "correct": "B", "explanation": "MOYENNE ignore le texte au même titre que les cellules vides - c'est NB.SI ou NBVAL qui feraient la différence."}, {"question": "Quelle fonction utiliseriez-vous pour connaître le nombre d'élèves inscrits, qu'ils aient une note ou non ?", "options": [{"letter": "A", "text": "NB"}, {"letter": "B", "text": "NBVAL sur la colonne des noms"}, {"letter": "C", "text": "SOMME"}, {"letter": "D", "text": "MOYENNE"}], "correct": "B", "explanation": "NBVAL sur la colonne Nom compte toutes les lignes non vides, donc tous les élèves inscrits."}]}, {"id": 4, "key": "S4_Quiz", "title": "Séance 4 - Quiz : SI, ET, OU", "theme": "Fonctions conditionnelles (SI, ET, OU)", "questions": [{"question": "Quelle est la syntaxe correcte de la fonction SI ?", "options": [{"letter": "A", "text": "=SI(condition, vrai, faux)"}, {"letter": "B", "text": "=SI(condition; valeur_si_vrai; valeur_si_faux)"}, {"letter": "C", "text": "=SI[condition](vrai)(faux)"}, {"letter": "D", "text": "=SI(vrai; faux; condition)"}], "correct": "B", "explanation": "La syntaxe française d'Excel utilise des points-virgules : =SI(test_logique; valeur_si_vrai; valeur_si_faux)."}, {"question": "Que renvoie =ET(VRAI; FAUX) ?", "options": [{"letter": "A", "text": "VRAI"}, {"letter": "B", "text": "FAUX"}, {"letter": "C", "text": "Une erreur"}, {"letter": "D", "text": "0"}], "correct": "B", "explanation": "ET() renvoie VRAI seulement si TOUTES les conditions sont vraies ; ici une est fausse donc le résultat est FAUX."}, {"question": "Que renvoie =OU(VRAI; FAUX) ?", "options": [{"letter": "A", "text": "VRAI"}, {"letter": "B", "text": "FAUX"}, {"letter": "C", "text": "Une erreur"}, {"letter": "D", "text": "1 et 0"}], "correct": "A", "explanation": "OU() renvoie VRAI dès qu'AU MOINS UNE des conditions est vraie."}, {"question": "Pour tester plusieurs conditions en même temps qui doivent TOUTES être respectées, on utilise :", "options": [{"letter": "A", "text": "OU()"}, {"letter": "B", "text": "ET()"}, {"letter": "C", "text": "SI() seul"}, {"letter": "D", "text": "NON()"}], "correct": "B", "explanation": "ET() combine plusieurs conditions qui doivent toutes être vraies simultanément."}, {"question": "Comment imbrique-t-on un SI dans un autre SI pour gérer 3 cas (ex: ADMIS/RATTRAPAGE/REFUSE) ?", "options": [{"letter": "A", "text": "Ce n'est pas possible avec SI"}, {"letter": "B", "text": "=SI(cond1;résultat1;SI(cond2;résultat2;résultat3))"}, {"letter": "C", "text": "=SI(cond1;cond2;résultat)"}, {"letter": "D", "text": "Il faut utiliser OU() uniquement"}], "correct": "B", "explanation": "On place un second SI dans l'argument 'valeur_si_faux' du premier pour tester une deuxième condition si la première échoue."}, {"question": "Dans l'exercice, pourquoi Aïcha Bamba (notes 4,15,16 - moyenne 11,67) est-elle en RATTRAPAGE et non ADMIS ?", "options": [{"letter": "A", "text": "Sa moyenne est trop faible"}, {"letter": "B", "text": "Elle a une note (4) inférieure à 5, malgré une moyenne >= 10"}, {"letter": "C", "text": "C'est une erreur de l'exercice"}, {"letter": "D", "text": "Elle a trop de notes"}], "correct": "B", "explanation": "La règle impose : moyenne>=10 ET aucune note<5. Aïcha a une moyenne suffisante mais une note de 4, donc RATTRAPAGE."}, {"question": "Quelle fonction permet d'inverser un résultat logique (VRAI devient FAUX) ?", "options": [{"letter": "A", "text": "INVERSE()"}, {"letter": "B", "text": "NON()"}, {"letter": "C", "text": "PAS()"}, {"letter": "D", "text": "CONTRAIRE()"}], "correct": "B", "explanation": "NON() inverse une valeur logique : NON(VRAI) = FAUX."}, {"question": "Combien de niveaux de SI imbriqués maximum Excel autorise-t-il (versions récentes) ?", "options": [{"letter": "A", "text": "3"}, {"letter": "B", "text": "7"}, {"letter": "C", "text": "64"}, {"letter": "D", "text": "Illimité"}], "correct": "C", "explanation": "Excel autorise jusqu'à 64 niveaux de SI imbriqués, mais au-delà de 3-4 on préfère souvent SI.CONDITIONS ou une table de correspondance pour la lisibilité."}]}, {"id": 5, "key": "S5_Quiz", "title": "Séance 5 - Quiz : Mise en forme conditionnelle, tri, filtres", "theme": "Mise en forme conditionnelle, tri et filtres", "questions": [{"question": "A quoi sert la mise en forme conditionnelle ?", "options": [{"letter": "A", "text": "A trier automatiquement les données"}, {"letter": "B", "text": "A appliquer un format visuel automatique selon une règle définie"}, {"letter": "C", "text": "A supprimer les doublons"}, {"letter": "D", "text": "A calculer une moyenne"}], "correct": "B", "explanation": "La mise en forme conditionnelle change l'apparence (couleur, police, icône) d'une cellule automatiquement quand elle respecte une condition."}, {"question": "Où trouve-t-on la mise en forme conditionnelle dans le ruban ?", "options": [{"letter": "A", "text": "Onglet Insertion"}, {"letter": "B", "text": "Onglet Accueil, groupe Style"}, {"letter": "C", "text": "Onglet Données"}, {"letter": "D", "text": "Onglet Révision"}], "correct": "B", "explanation": "Elle se trouve dans Accueil > Style > Mise en forme conditionnelle."}, {"question": "Que fait un filtre automatique sur un tableau ?", "options": [{"letter": "A", "text": "Il supprime définitivement les lignes non conformes"}, {"letter": "B", "text": "Il masque temporairement les lignes qui ne correspondent pas au critère choisi"}, {"letter": "C", "text": "Il trie les données par ordre alphabétique"}, {"letter": "D", "text": "Il change les couleurs du tableau"}], "correct": "B", "explanation": "Le filtre masque les lignes ne correspondant pas au(x) critère(s) sans supprimer aucune donnée ; on peut retirer le filtre à tout moment."}, {"question": "Trier un tableau par 'Prix décroissant' signifie :", "options": [{"letter": "A", "text": "Du prix le plus bas au plus haut"}, {"letter": "B", "text": "Du prix le plus haut au plus bas"}, {"letter": "C", "text": "Par ordre alphabétique"}, {"letter": "D", "text": "Cela n'existe pas pour les nombres"}], "correct": "B", "explanation": "Décroissant = du plus grand au plus petit ; croissant = du plus petit au plus grand."}, {"question": "Si on trie une colonne, que se passe-t-il avec le reste des données de la ligne ?", "options": [{"letter": "A", "text": "Rien, seule la colonne triée bouge (les lignes se dissocient)"}, {"letter": "B", "text": "Toute la ligne bouge avec elle pour garder la cohérence des données"}, {"letter": "C", "text": "Excel demande toujours confirmation avant de trier"}, {"letter": "D", "text": "Le tri casse le tableau"}], "correct": "B", "explanation": "Excel déplace la ligne entière pour ne pas dissocier les informations d'un même enregistrement (sauf cas particulier volontairement choisi)."}, {"question": "Peut-on appliquer plusieurs règles de mise en forme conditionnelle sur la même plage ?", "options": [{"letter": "A", "text": "Non, une seule règle maximum"}, {"letter": "B", "text": "Oui, plusieurs règles peuvent coexister sur la même plage"}, {"letter": "C", "text": "Seulement 2 règles maximum"}, {"letter": "D", "text": "Uniquement avec VBA"}], "correct": "B", "explanation": "On peut empiler plusieurs règles ; Excel les applique dans l'ordre de priorité qu'on peut gérer dans le gestionnaire de règles."}, {"question": "Comment retire-t-on un filtre actif sur un tableau ?", "options": [{"letter": "A", "text": "Il est impossible de le retirer"}, {"letter": "B", "text": "Données > Effacer (ou décocher le filtre), ou Ctrl+Shift+L"}, {"letter": "C", "text": "Il faut supprimer les données filtrées"}, {"letter": "D", "text": "Fermer et rouvrir le fichier"}], "correct": "B", "explanation": "Le bouton 'Effacer' du groupe Trier et filtrer, ou le raccourci Ctrl+Shift+L, retire le filtre actif tout en gardant les données."}, {"question": "Dans l'exercice, pourquoi le Lait en poudre (stock 2, seuil 5) apparaît-il en rouge ?", "options": [{"letter": "A", "text": "Parce que c'est un produit périssable"}, {"letter": "B", "text": "Parce que sa quantité en stock est inférieure au seuil d'alerte"}, {"letter": "C", "text": "Parce que son prix est trop élevé"}, {"letter": "D", "text": "Par erreur de saisie"}], "correct": "B", "explanation": "La règle rouge s'applique dès que Quantité < Seuil d'alerte, ce qui est le cas ici (2 < 5)."}]}, {"id": 6, "key": "S6_Quiz", "title": "Séance 6 - Quiz : Mise en page et impression", "theme": "Mise en page et impression", "questions": [{"question": "Où se trouve l'option pour changer l'orientation d'une feuille (Portrait/Paysage) ?", "options": [{"letter": "A", "text": "Onglet Accueil"}, {"letter": "B", "text": "Onglet Mise en page"}, {"letter": "C", "text": "Onglet Révision"}, {"letter": "D", "text": "Onglet Affichage"}], "correct": "B", "explanation": "L'onglet Mise en page regroupe orientation, marges, zone d'impression, et tous les réglages liés à l'impression."}, {"question": "A quoi sert la 'Zone d'impression' ?", "options": [{"letter": "A", "text": "A définir la couleur de fond de la feuille"}, {"letter": "B", "text": "A choisir précisément quelle partie de la feuille sera imprimée"}, {"letter": "C", "text": "A protéger la feuille contre la modification"}, {"letter": "D", "text": "A fusionner des cellules"}], "correct": "B", "explanation": "La zone d'impression permet de limiter l'impression à une plage précise, en excluant par exemple des notes ou consignes hors tableau."}, {"question": "L'option 'Répéter les lignes d'en-tête' sert à :", "options": [{"letter": "A", "text": "Dupliquer toutes les données sur chaque page"}, {"letter": "B", "text": "Faire apparaître la ligne de titres des colonnes sur chaque page imprimée"}, {"letter": "C", "text": "Ajouter une deuxième feuille identique"}, {"letter": "D", "text": "Empêcher l'impression"}], "correct": "B", "explanation": "Très utile pour un tableau qui s'étale sur plusieurs pages : le lecteur garde toujours les titres de colonnes visibles."}, {"question": "Quel raccourci clavier ouvre l'aperçu avant impression ?", "options": [{"letter": "A", "text": "Ctrl + P"}, {"letter": "B", "text": "Ctrl + I"}, {"letter": "C", "text": "Ctrl + Shift + P"}, {"letter": "D", "text": "F5"}], "correct": "A", "explanation": "Ctrl+P ouvre directement l'aperçu et les options d'impression dans Excel."}, {"question": "Pourquoi vérifier l'aperçu avant impression est important ?", "options": [{"letter": "A", "text": "Ce n'est pas vraiment utile"}, {"letter": "B", "text": "Pour repérer des colonnes coupées, un tableau mal centré ou étalé sur trop de pages avant de gaspiller du papier"}, {"letter": "C", "text": "Uniquement pour vérifier l'orthographe"}, {"letter": "D", "text": "Pour changer les formules"}], "correct": "B", "explanation": "L'aperçu permet d'anticiper les problèmes de mise en page (colonnes coupées, sauts de page mal placés) avant impression réelle."}, {"question": "Un en-tête et un pied de page dans Excel peuvent contenir :", "options": [{"letter": "A", "text": "Uniquement du texte simple"}, {"letter": "B", "text": "Texte, numéro de page, date, nom de fichier, logo"}, {"letter": "C", "text": "Uniquement des formules"}, {"letter": "D", "text": "Rien, ils ne sont pas personnalisables"}], "correct": "B", "explanation": "Excel permet d'insérer dynamiquement numéro de page, date, heure, nom de fichier/feuille, voire une image (logo) en en-tête ou pied de page."}, {"question": "Que signifie l'option de marge 'Etroit' ?", "options": [{"letter": "A", "text": "Des marges plus petites pour maximiser l'espace imprimable"}, {"letter": "B", "text": "Des marges plus grandes"}, {"letter": "C", "text": "Aucune marge du tout"}, {"letter": "D", "text": "Une orientation spécifique"}], "correct": "A", "explanation": "Le préréglage 'Etroit' réduit les marges par défaut pour utiliser un maximum de la surface de la page."}, {"question": "Si un tableau est trop large pour tenir sur une page, quelle solution rapide peut-on utiliser ?", "options": [{"letter": "A", "text": "Il n'y a pas de solution"}, {"letter": "B", "text": "Ajuster l'échelle via 'Mise à l'échelle : ajuster à 1 page en largeur'"}, {"letter": "C", "text": "Supprimer des colonnes définitivement"}, {"letter": "D", "text": "Changer la police en plus grande taille"}], "correct": "B", "explanation": "L'option de mise à l'échelle (onglet Mise en page) permet de forcer l'impression sur un nombre de pages donné en réduisant proportionnellement le contenu."}]}, {"id": 7, "key": "S7_Quiz", "title": "Séance 7 - Quiz : Graphiques", "theme": "Graphiques simples", "questions": [{"question": "Quel type de graphique est le plus adapté pour montrer une évolution dans le temps ?", "options": [{"letter": "A", "text": "Le camembert"}, {"letter": "B", "text": "L'histogramme (barres)"}, {"letter": "C", "text": "La courbe"}, {"letter": "D", "text": "Le nuage de points uniquement"}], "correct": "C", "explanation": "La courbe (graphique en ligne) est idéale pour visualiser une tendance ou une évolution chronologique."}, {"question": "Quel type de graphique est le plus adapté pour montrer une répartition en pourcentage d'un total ?", "options": [{"letter": "A", "text": "La courbe"}, {"letter": "B", "text": "Le secteur (camembert)"}, {"letter": "C", "text": "L'histogramme empilé uniquement"}, {"letter": "D", "text": "Aucun graphique ne peut montrer cela"}], "correct": "B", "explanation": "Le camembert (secteurs) montre naturellement la part de chaque catégorie dans un total à 100%."}, {"question": "Pour créer un graphique, il faut d'abord :", "options": [{"letter": "A", "text": "Ouvrir un nouveau classeur"}, {"letter": "B", "text": "Sélectionner les données à représenter"}, {"letter": "C", "text": "Fermer Excel et le rouvrir"}, {"letter": "D", "text": "Convertir les données en texte"}], "correct": "B", "explanation": "On sélectionne les données (avec les en-têtes de préférence), puis Insertion > Graphiques recommandés ou un type précis."}, {"question": "Où se trouve l'onglet permettant d'insérer un graphique ?", "options": [{"letter": "A", "text": "Accueil"}, {"letter": "B", "text": "Insertion"}, {"letter": "C", "text": "Données"}, {"letter": "D", "text": "Révision"}], "correct": "B", "explanation": "L'onglet Insertion contient tous les types de graphiques disponibles dans Excel."}, {"question": "Un histogramme (graphique en barres) est surtout utile pour :", "options": [{"letter": "A", "text": "Comparer des valeurs entre plusieurs catégories"}, {"letter": "B", "text": "Montrer un pourcentage d'un tout"}, {"letter": "C", "text": "Afficher du texte"}, {"letter": "D", "text": "Trier des données"}], "correct": "A", "explanation": "L'histogramme excelle pour comparer visuellement des quantités entre différentes catégories (produits, mois, régions...)."}, {"question": "Peut-on modifier le titre d'un graphique après sa création ?", "options": [{"letter": "A", "text": "Non, il faut le recréer entièrement"}, {"letter": "B", "text": "Oui, en double-cliquant directement sur le titre du graphique"}, {"letter": "C", "text": "Seulement via une macro VBA"}, {"letter": "D", "text": "Seulement si le graphique est un histogramme"}], "correct": "B", "explanation": "Un double-clic sur n'importe quel élément du graphique (titre, légende, axes) permet de le modifier directement."}, {"question": "Que se passe-t-il si on modifie une donnée source après avoir créé le graphique ?", "options": [{"letter": "A", "text": "Le graphique reste figé sur l'ancienne valeur"}, {"letter": "B", "text": "Le graphique se met à jour automatiquement"}, {"letter": "C", "text": "Il faut recréer le graphique"}, {"letter": "D", "text": "Excel affiche une erreur"}], "correct": "B", "explanation": "Les graphiques Excel sont dynamiques et liés à leurs données sources : toute modification des données se répercute automatiquement."}, {"question": "Dans l'exercice, pourquoi le camembert n'est-il PAS adapté pour représenter l'évolution du CA sur 6 mois ?", "options": [{"letter": "A", "text": "Parce que le camembert ne peut afficher que 3 catégories maximum"}, {"letter": "B", "text": "Parce que le camembert montre une répartition à un instant T, pas une évolution chronologique"}, {"letter": "C", "text": "Parce qu'il faut toujours utiliser un histogramme pour du CA"}, {"letter": "D", "text": "Le camembert est en réalité tout à fait adapté à ce cas"}], "correct": "B", "explanation": "Le camembert représente une photo figée d'une répartition ; il ne peut pas montrer une progression dans le temps comme le fait une courbe."}]}, {"id": 8, "key": "S8_Quiz", "title": "Séance 8 - Quiz final de révision (Niveau Débutant)", "theme": "Révisions + projet de synthèse", "questions": [{"question": "Quelle fonction utilise-t-on pour additionner uniquement les cellules qui remplissent une condition ?", "options": [{"letter": "A", "text": "SOMME"}, {"letter": "B", "text": "SOMME.SI"}, {"letter": "C", "text": "MOYENNE"}, {"letter": "D", "text": "NB"}], "correct": "B", "explanation": "SOMME.SI additionne les valeurs d'une plage qui respectent un critère précis (contrairement à SOMME qui additionne tout)."}, {"question": "Pour qu'une référence de cellule ne bouge jamais lors d'une recopie, on la rend :", "options": [{"letter": "A", "text": "Relative"}, {"letter": "B", "text": "Absolue (avec $)"}, {"letter": "C", "text": "Mixte uniquement"}, {"letter": "D", "text": "Cela n'existe pas"}], "correct": "B", "explanation": "Le symbole $ devant la ligne et/ou la colonne fige la référence lors d'une recopie."}, {"question": "Quelle combinaison permet de tester deux conditions qui doivent être VRAIES en même temps dans un SI ?", "options": [{"letter": "A", "text": "OU()"}, {"letter": "B", "text": "ET()"}, {"letter": "C", "text": "NON()"}, {"letter": "D", "text": "SI() seul suffit"}], "correct": "B", "explanation": "ET() dans un SI permet d'exiger que toutes les conditions soient remplies simultanément."}, {"question": "Quel est le rôle principal de la mise en forme conditionnelle ?", "options": [{"letter": "A", "text": "Trier les données"}, {"letter": "B", "text": "Mettre en évidence visuellement des données selon une règle"}, {"letter": "C", "text": "Calculer des totaux"}, {"letter": "D", "text": "Créer des graphiques"}], "correct": "B", "explanation": "Elle permet de repérer immédiatement des valeurs importantes (dépassement de seuil, erreur, statut) grâce à la couleur ou au style."}, {"question": "Pour ne visualiser que certaines lignes d'un tableau sans les supprimer, on utilise :", "options": [{"letter": "A", "text": "Le tri"}, {"letter": "B", "text": "Le filtre"}, {"letter": "C", "text": "La suppression de lignes"}, {"letter": "D", "text": "La mise en forme conditionnelle"}], "correct": "B", "explanation": "Le filtre masque temporairement les lignes ne correspondant pas au critère, sans jamais supprimer les données."}, {"question": "Quel graphique choisir pour montrer l'évolution d'un chiffre d'affaires sur 12 mois ?", "options": [{"letter": "A", "text": "Le camembert"}, {"letter": "B", "text": "La courbe"}, {"letter": "C", "text": "N'importe lequel convient"}, {"letter": "D", "text": "Un tableau suffit, pas de graphique"}], "correct": "B", "explanation": "La courbe est le choix naturel pour visualiser une évolution chronologique."}, {"question": "Avant d'imprimer un grand tableau, il est recommandé de :", "options": [{"letter": "A", "text": "L'imprimer directement sans vérification"}, {"letter": "B", "text": "Vérifier l'aperçu avant impression et ajuster la mise en page"}, {"letter": "C", "text": "Le convertir en image"}, {"letter": "D", "text": "Supprimer les formules"}], "correct": "B", "explanation": "L'aperçu avant impression permet d'anticiper les problèmes (colonnes coupées, pages mal réparties) avant de gaspiller du papier."}, {"question": "NB.SI et NBVAL : quelle est la bonne description ?", "options": [{"letter": "A", "text": "NB.SI compte selon un critère précis, NBVAL compte toutes les cellules non vides"}, {"letter": "B", "text": "Ce sont deux noms pour la même fonction"}, {"letter": "C", "text": "NBVAL compte selon un critère, NB.SI compte tout"}, {"letter": "D", "text": "Aucune des deux ne fonctionne avec du texte"}], "correct": "A", "explanation": "NB.SI compte les cellules respectant un critère donné ; NBVAL compte simplement toutes les cellules non vides, sans condition."}]}];
+
+const LS_PARTICIPANTS = 'excelQuiz_participants_v1';
+const LS_SESSION = 'excelQuiz_currentSession_v1';
+
+/* ============ STORAGE HELPERS ============ */
+function loadParticipants() {
+  try {
+    const raw = localStorage.getItem(LS_PARTICIPANTS);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) { return {}; }
+}
+function saveParticipants(data) {
+  localStorage.setItem(LS_PARTICIPANTS, JSON.stringify(data));
+}
+function loadSessionState() {
+  try {
+    const raw = localStorage.getItem(LS_SESSION);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) { return null; }
+}
+function saveSessionState(state) {
+  localStorage.setItem(LS_SESSION, JSON.stringify(state));
+}
+function clearSessionState() {
+  localStorage.removeItem(LS_SESSION);
+}
+
+let participants = loadParticipants();
+let currentUserEmail = null;
+let isAdmin = false;
+
+let currentSession = null;
+let currentIndex = 0;
+let currentScore = 0;
+let answered = false;
+let sessionLog = [];
+
+/* ============ INIT / ROUTING ============ */
+function init() {
+  const state = loadSessionState();
+  if (state && state.type === 'admin') {
+    isAdmin = true;
+    showAdminScreen();
+  } else if (state && state.type === 'user' && participants[state.email]) {
+    currentUserEmail = state.email;
+    showMenuScreen();
+  } else {
+    showLoginScreen();
+  }
+}
+
+function showLoginScreen() {
+  hideAll();
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('user-box').classList.add('hidden');
+}
+
+function hideAll() {
+  ['login-screen','menu-screen','quiz-screen','result-screen','admin-screen'].forEach(id => {
+    document.getElementById(id).classList.add('hidden');
+  });
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str == null ? '' : String(str);
+  return d.innerHTML;
+}
+
+/* ============ LOGIN ============ */
+function handleLogin(evt) {
+  evt.preventDefault();
+  const prenom = document.getElementById('in-prenom').value.trim();
+  const nom = document.getElementById('in-nom').value.trim();
+  const email = document.getElementById('in-email').value.trim().toLowerCase();
+  const errBox = document.getElementById('login-err');
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(email)) {
+    errBox.style.display = 'block';
+    return false;
+  }
+  errBox.style.display = 'none';
+
+  if (!participants[email]) {
+    participants[email] = { prenom, nom, email, scores: {}, createdAt: new Date().toISOString() };
+  } else {
+    participants[email].prenom = prenom;
+    participants[email].nom = nom;
+  }
+  saveParticipants(participants);
+
+  currentUserEmail = email;
+  saveSessionState({ type: 'user', email });
+  showMenuScreen();
+  return false;
+}
+
+function toggleAdminLogin() {
+  document.getElementById('admin-inline-box').classList.toggle('hidden');
+  document.getElementById('admin-err').style.display = 'none';
+}
+
+function handleAdminLogin() {
+  const pwd = document.getElementById('admin-password').value;
+  const errBox = document.getElementById('admin-err');
+  if (pwd === ADMIN_PASSWORD) {
+    errBox.style.display = 'none';
+    isAdmin = true;
+    saveSessionState({ type: 'admin' });
+    showAdminScreen();
+  } else {
+    errBox.style.display = 'block';
+  }
+}
+
+function logout() {
+  isAdmin = false;
+  currentUserEmail = null;
+  clearSessionState();
+  document.getElementById('in-prenom').value = '';
+  document.getElementById('in-nom').value = '';
+  document.getElementById('in-email').value = '';
+  document.getElementById('admin-password').value = '';
+  document.getElementById('admin-inline-box').classList.add('hidden');
+  showLoginScreen();
+}
+
+/* ============ MENU ============ */
+function showMenuScreen() {
+  hideAll();
+  document.getElementById('menu-screen').classList.remove('hidden');
+  const p = participants[currentUserEmail];
+  const userBox = document.getElementById('user-box');
+  userBox.classList.remove('hidden');
+  document.getElementById('user-name').textContent = `${p.prenom} ${p.nom}`;
+  renderMenu();
+}
+
+function renderMenu() {
+  const p = participants[currentUserEmail];
+  const grid = document.getElementById('session-grid');
+  grid.innerHTML = '';
+  SESSIONS.forEach(s => {
+    const card = document.createElement('div');
+    card.className = 'session-card';
+    card.onclick = () => startQuiz(s.id);
+    const res = p.scores[s.id];
+    const badge = res
+      ? `<span class="badge done">${res.score}/${res.total} ✓</span>`
+      : `<span class="badge">${s.questions.length} questions</span>`;
+    card.innerHTML = `
+      <div class="num">S${s.id}</div>
+      <h3>${escapeHtml(s.title.replace(/^Séance \d+ - /, ''))}</h3>
+      <p class="theme">${escapeHtml(s.theme)}</p>
+      <div class="footer-row">
+        ${badge}
+        <span style="color:var(--green-dark); font-weight:600;">${res ? 'Refaire' : 'Commencer'} &rarr;</span>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+  renderOverall();
+}
+
+function renderOverall() {
+  const p = participants[currentUserEmail];
+  const footer = document.getElementById('overall-footer');
+  const done = Object.keys(p.scores).length;
+  if (done === 0) {
+    footer.textContent = 'Choisissez une séance pour démarrer son quiz.';
+    return;
+  }
+  let totalScore = 0, totalQ = 0;
+  Object.values(p.scores).forEach(r => { totalScore += r.score; totalQ += r.total; });
+  footer.textContent = `Progression : ${done}/${SESSIONS.length} quiz complétés · Score cumulé ${totalScore}/${totalQ}`;
+}
+
+/* ============ SYNCHRONISATION GOOGLE SHEET ============ */
+function syncToSheet(payload) {
+  if (!WEBHOOK_URL) return; // synchronisation désactivée si aucune URL renseignée
+  try {
+    fetch(WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors', // Apps Script ne renvoie pas d'en-têtes CORS ; on envoie "à l'aveugle"
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).catch(function () {
+      // Échec silencieux (hors ligne, etc.) : le score reste sauvegardé localement
+      // et pourra être exporté en CSV depuis l'espace administrateur.
+    });
+  } catch (e) {
+    // Navigateur trop ancien ou fetch indisponible : on ignore, la sauvegarde locale suffit.
+  }
+}
+
+/* ============ QUIZ ============ */
+function startQuiz(sessionId) {
+  currentSession = SESSIONS.find(s => s.id === sessionId);
+  currentIndex = 0;
+  currentScore = 0;
+  sessionLog = [];
+  hideAll();
+  document.getElementById('quiz-screen').classList.remove('hidden');
+  document.getElementById('quiz-title').textContent = currentSession.title;
+  document.getElementById('quiz-theme').textContent = currentSession.theme;
+  renderQuestion();
+}
+
+function retryQuiz() {
+  startQuiz(currentSession.id);
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = currentSession.questions[currentIndex];
+  const total = currentSession.questions.length;
+
+  document.getElementById('progress-fill').style.width = `${(currentIndex / total) * 100}%`;
+  document.getElementById('q-counter').textContent = `Question ${currentIndex + 1} / ${total}`;
+  document.getElementById('q-score-live').textContent = `Score : ${currentScore}/${currentIndex}`;
+  document.getElementById('q-text').textContent = q.question;
+
+  const optWrap = document.getElementById('q-options');
+  optWrap.innerHTML = '';
+  q.options.forEach(opt => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.dataset.letter = opt.letter;
+    div.innerHTML = `<span class="letter">${opt.letter}</span><span>${escapeHtml(opt.text)}</span>`;
+    div.onclick = () => selectOption(opt.letter);
+    optWrap.appendChild(div);
+  });
+
+  const fb = document.getElementById('q-feedback');
+  fb.className = 'feedback';
+  fb.innerHTML = '';
+
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.disabled = true;
+  nextBtn.textContent = (currentIndex === total - 1) ? 'Voir les résultats' : 'Suivant';
+}
+
+function selectOption(letter) {
+  if (answered) return;
+  answered = true;
+  const q = currentSession.questions[currentIndex];
+  const isCorrect = letter === q.correct;
+  if (isCorrect) currentScore++;
+
+  const options = document.querySelectorAll('#q-options .option');
+  options.forEach(el => {
+    el.classList.add('disabled');
+    const l = el.dataset.letter;
+    if (l === q.correct) el.classList.add('correct');
+    else if (l === letter) el.classList.add('wrong');
+    else el.classList.add('dim');
+  });
+
+  const fb = document.getElementById('q-feedback');
+  fb.className = 'feedback show ' + (isCorrect ? 'ok' : 'ko');
+  const correctOpt = q.options.find(o => o.letter === q.correct);
+  fb.innerHTML = isCorrect
+    ? `<strong>✓ Bonne réponse !</strong>${escapeHtml(q.explanation)}`
+    : `<strong>✗ Pas tout à fait — la bonne réponse était ${q.correct}) ${escapeHtml(correctOpt.text)}</strong>${escapeHtml(q.explanation)}`;
+
+  document.getElementById('q-score-live').textContent = `Score : ${currentScore}/${currentIndex + 1}`;
+  document.getElementById('next-btn').disabled = false;
+
+  const chosenOpt = q.options.find(o => o.letter === letter);
+  sessionLog.push({
+    question: q.question,
+    chosenText: `${letter}) ${chosenOpt.text}`,
+    correctText: `${q.correct}) ${correctOpt.text}`,
+    isCorrect
+  });
+}
+
+function nextQuestion() {
+  const total = currentSession.questions.length;
+  if (currentIndex < total - 1) {
+    currentIndex++;
+    renderQuestion();
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz() {
+  const total = currentSession.questions.length;
+  const p = participants[currentUserEmail];
+  p.scores[currentSession.id] = {
+    score: currentScore,
+    total,
+    date: new Date().toISOString()
+  };
+  saveParticipants(participants);
+
+  syncToSheet({
+    prenom: p.prenom,
+    nom: p.nom,
+    email: p.email,
+    seance: 'S' + currentSession.id,
+    titre: currentSession.title,
+    score: currentScore,
+    total: total
+  });
+
+  hideAll();
+  document.getElementById('result-screen').classList.remove('hidden');
+
+  const pct = Math.round((currentScore / total) * 100);
+  const ring = document.getElementById('result-ring');
+  let color = '#c0392b';
+  let msg = "Cette séance mérite d'être revue avant de continuer.";
+  if (pct >= 80) { color = '#1D6F42'; msg = 'Excellent ! Cette séance est acquise.'; }
+  else if (pct >= 50) { color = '#C9A227'; msg = 'Pas mal, quelques notions à revoir.'; }
+
+  ring.style.background = color;
+  document.getElementById('result-num').textContent = currentScore;
+  document.getElementById('result-den').textContent = `/ ${total}`;
+  document.getElementById('result-title').textContent = `${pct}% de bonnes réponses`;
+  document.getElementById('result-msg').textContent = msg;
+
+  const recap = document.getElementById('recap');
+  recap.innerHTML = '<div style="font-weight:700; margin-bottom:10px; font-size:13.5px;">Détail des réponses</div>';
+  sessionLog.forEach((item, i) => {
+    const row = document.createElement('div');
+    row.className = 'recap-item';
+    row.innerHTML = `
+      <div class="recap-icon ${item.isCorrect ? 'ok' : 'ko'}">${item.isCorrect ? '✓' : '✗'}</div>
+      <div class="recap-text">
+        <div class="q">${i + 1}. ${escapeHtml(item.question)}</div>
+        <div class="a">${item.isCorrect ? 'Votre réponse : ' + escapeHtml(item.chosenText) : 'Votre réponse : ' + escapeHtml(item.chosenText) + ' — Bonne réponse : ' + escapeHtml(item.correctText)}</div>
+      </div>
+    `;
+    recap.appendChild(row);
+  });
+
+  document.getElementById('progress-fill').style.width = '100%';
+}
+
+function goToMenu() {
+  showMenuScreen();
+}
+
+/* ============ ADMIN ============ */
+function showAdminScreen() {
+  hideAll();
+  document.getElementById('admin-screen').classList.remove('hidden');
+  document.getElementById('user-box').classList.add('hidden');
+  renderAdmin();
+}
+
+function renderAdmin() {
+  const emails = Object.keys(participants);
+  const statsWrap = document.getElementById('admin-stats');
+  const tableWrap = document.getElementById('admin-table-wrap');
+
+  if (emails.length === 0) {
+    statsWrap.innerHTML = '';
+    tableWrap.innerHTML = '<div class="empty-admin">Aucun participant enregistré sur ce navigateur pour le moment.</div>';
+    return;
+  }
+
+  let totalCompletions = 0, totalScore = 0, totalPossible = 0;
+  emails.forEach(email => {
+    const p = participants[email];
+    const scores = Object.values(p.scores);
+    totalCompletions += scores.length;
+    scores.forEach(s => { totalScore += s.score; totalPossible += s.total; });
+  });
+  const globalPct = totalPossible > 0 ? Math.round((totalScore / totalPossible) * 100) : 0;
+
+  statsWrap.innerHTML = `
+    <div class="stat-box"><div class="val">${emails.length}</div><div class="lbl">Participants</div></div>
+    <div class="stat-box"><div class="val">${totalCompletions}</div><div class="lbl">Quiz complétés (total)</div></div>
+    <div class="stat-box"><div class="val">${globalPct}%</div><div class="lbl">Score moyen global</div></div>
+  `;
+
+  let rows = '';
+  emails.forEach(email => {
+    const p = participants[email];
+    const scores = p.scores;
+    const doneCount = Object.keys(scores).length;
+    let sumScore = 0, sumTotal = 0;
+    SESSIONS.forEach(s => {
+      const r = scores[s.id];
+      if (r) { sumScore += r.score; sumTotal += r.total; }
+    });
+    const pct = sumTotal > 0 ? Math.round((sumScore / sumTotal) * 100) : null;
+    let pctClass = 'low';
+    if (pct !== null) {
+      pctClass = pct >= 80 ? 'high' : (pct >= 50 ? 'mid' : 'low');
+    }
+    const detail = SESSIONS.map(s => {
+      const r = scores[s.id];
+      return r ? `S${s.id}: ${r.score}/${r.total}` : `S${s.id}: —`;
+    }).join(' · ');
+
+    rows += `
+      <tr>
+        <td>${escapeHtml(p.prenom)} ${escapeHtml(p.nom)}</td>
+        <td>${escapeHtml(p.email)}</td>
+        <td>${doneCount}/${SESSIONS.length}</td>
+        <td>${pct !== null ? `<span class="pct-chip ${pctClass}">${pct}%</span>` : '—'}</td>
+        <td style="font-size:11.5px; color:var(--muted);">${detail}</td>
+      </tr>
+    `;
+  });
+
+  tableWrap.innerHTML = `
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Participant</th>
+          <th>Email</th>
+          <th>Quiz complétés</th>
+          <th>Score global</th>
+          <th>Détail par séance</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+function exportCsv() {
+  const emails = Object.keys(participants);
+  if (emails.length === 0) { alert("Aucune donnée à exporter."); return; }
+
+  let csvRows = [['Prenom','Nom','Email','Séance','Titre','Score','Total','Pourcentage','Date']];
+  emails.forEach(email => {
+    const p = participants[email];
+    SESSIONS.forEach(s => {
+      const r = p.scores[s.id];
+      if (r) {
+        const pct = Math.round((r.score / r.total) * 100);
+        csvRows.push([p.prenom, p.nom, p.email, 'S' + s.id, s.title, r.score, r.total, pct + '%', r.date]);
+      }
+    });
+  });
+
+  const csvContent = csvRows.map(row =>
+    row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(';')
+  ).join('\n');
+
+  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'resultats_quiz_excel.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+init();
+</script>
+</body>
+</html>
